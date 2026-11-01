@@ -1,0 +1,15 @@
+target
+.git
+.github
+.devcontainer
+.idea
+k8s
+docker-compose.yml
+compose.yaml
+gradle
+gradlew
+gradlew.bat
+build.gradle
+settings.gradle
+.gradle
+*.md

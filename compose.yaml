@@ -1,0 +1,8 @@
+services:
+  petclinic:
+    build: .
+    image: petclinic:local
+    ports:
+      - "127.0.0.1:8080:8080"
+    security_opt:
+      - no-new-privileges:true
