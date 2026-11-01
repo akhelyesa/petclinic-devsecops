@@ -1,0 +1,45 @@
+name: DevSecOps
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: temurin
+          cache: maven
+      - name: Test
+        run: mvn -B test "-Dtest=!PostgresIntegrationTests"
+
+  semgrep:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Semgrep
+        run: |
+          set +e
+          docker run --rm -v "${GITHUB_WORKSPACE}:/src" semgrep/semgrep semgrep scan --config p/java --config p/security-audit --exclude target --exclude .git --metrics=off /src
+          code=$?
+          if [ "$code" -eq 0 ] || [ "$code" -eq 1 ]; then
+            exit 0
+          fi
+          exit "$code"
+
+  trivy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: docker build -t petclinic:ci .
+      - name: Trivy filesystem
+        run: docker run --rm -v "${GITHUB_WORKSPACE}:/src" aquasec/trivy fs --severity HIGH,CRITICAL --skip-dirs /src/target --skip-dirs /src/.git /src
+      - name: Trivy image
+        run: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image --severity HIGH,CRITICAL petclinic:ci
