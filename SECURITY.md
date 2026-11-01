@@ -39,6 +39,6 @@ All 12 are in upstream libraries brought in by Spring Boot 4.1.0. They were not 
 | `jackson-core` | 3.1.4 | CVE-2026-89407, CVE-2026-89425 | High |
 | `jackson-databind` | bundled in `app.jar` | CVE-2026-68497, CVE-2026-91776, CVE-2026-91777 | High |
 
-A filesystem scan that asked Maven Central for dependency metadata received HTTP 429 and a 30-minute block. An offline retry of `pom.xml` could not resolve child versions, so its count of 0 does not describe the libraries inside the jar. The image scan above is the dependency result. GitHub Actions runs the filesystem scan from a different network, where Maven Central may answer.
+A filesystem scan that asked Maven Central for dependency metadata received HTTP 429 and a 30-minute block. An offline retry of `pom.xml` could not resolve child versions, so its count of 0 does not describe the libraries inside the jar. The image scan above is the dependency result. GitHub Actions runs the filesystem scan with `--offline-scan` for the same reason.
 
 Semgrep and Trivy are configured to print results. A finding in an upstream dependency does not by itself fail the workflow. A failing test does.

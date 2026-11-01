@@ -40,6 +40,6 @@ jobs:
       - name: Build image
         run: docker build -t petclinic:ci .
       - name: Trivy filesystem
-        run: docker run --rm -v "${GITHUB_WORKSPACE}:/src" aquasec/trivy fs --severity HIGH,CRITICAL --skip-dirs /src/target --skip-dirs /src/.git /src
+        run: docker run --rm -v "${GITHUB_WORKSPACE}:/src" aquasec/trivy fs --offline-scan --severity HIGH,CRITICAL --skip-dirs /src/target --skip-dirs /src/.git /src
       - name: Trivy image
         run: docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image --severity HIGH,CRITICAL petclinic:ci
